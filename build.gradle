@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+    id "org.jetbrains.kotlin.jvm" version "1.4.21"
+}
+
+group 'com.sstep'
+version '1.0.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'org.junit.jupiter:junit-jupiter:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+    jvmArgs '--enable-preview'
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
