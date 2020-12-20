@@ -1,6 +1,7 @@
 package com.sstep.servlet;
 
 import com.sstep.http.HttpRequest;
+import com.sstep.http.HttpResponse;
 import com.sstep.http.exception.HttpParsingException;
 
 import java.io.*;
@@ -30,25 +31,13 @@ public class TestServlet {
                     System.out.println("The Client " + clientSocket.getInetAddress() + ":" + clientSocket.getPort() + " is connected");
 
                     final HttpRequest request = new HttpRequest(in);
+                    final HttpResponse response = new HttpResponse(request);
 
-                    out.write("HTTP/1.1 200 OK\n" +
-                            "Date: Mon, 27 Jul 2009 12:28:53 GMT\n" +
-                            "Server: Apache/2.2.14 (Win32)\n" +
-                            "Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT\n" +
-                            "Content-Length: 88\n" +
-                            "Connection: Closed\n" +
-                            "Content-Type: text/html\n" +
-                            "\n" +
-                            "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n" +
-                            "<html>\n" +
-                            "<body>\n" +
-                            "<h1>Hello, World!</h1>\n" +
-                            "</body>\n" +
-                            "</html>" +
-                            "\n");
+                    out.write(response.toString());
                     out.flush();
                 } catch (final HttpParsingException e) {
                     e.printStackTrace();
+                    return;
                 }
             }
         } catch (final IOException e) {
