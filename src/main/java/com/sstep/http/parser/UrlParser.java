@@ -1,18 +1,18 @@
-package com.sstep.http;
+package com.sstep.http.parser;
 
+import com.sstep.http.Url;
 import com.sstep.http.exception.HttpParsingException;
 import com.sstep.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
  * @author sstepanov
  */
-public class Uri {
+public class UrlParser {
 
     private static final List<String> ALLOWED_FILE_EXTENSIONS = new ArrayList<>();
 
@@ -21,12 +21,7 @@ public class Uri {
         ALLOWED_FILE_EXTENSIONS.add("xml");
     }
 
-    private List<String> path = new ArrayList<>();
-    private final Map<String, String> parameters = new HashMap<>();
-    private boolean root = false;
-    private String file = null;
-
-    public Uri(final String pathWithParams) throws HttpParsingException {
+    public static Url parse(final String pathWithParams) throws HttpParsingException {
         if (pathWithParams.isEmpty()) {
             throw new HttpParsingException("Invalid path and params string");
         }
@@ -34,12 +29,12 @@ public class Uri {
             throw new HttpParsingException("Invalid path and params string");
         }
         if (pathWithParams.length() == 1 && pathWithParams.charAt(0) == '/') {
-            root = true;
-            return;
+            return Url.root();
         }
         final String[] pathAndParams = pathWithParams.split("\\?");
 
-        path = List.of(pathAndParams[0].substring(1).split("/"));
+        final List<String> path = List.of(pathAndParams[0].substring(1).split("/"));
+        String file = null;
 
         if (path.size() > 0) {
             final String last = path.get(path.size() - 1);
@@ -49,10 +44,11 @@ public class Uri {
         }
 
         if (pathAndParams.length == 1) {
-            return;
+            return new Url(path, file, false, new HashMap<>());
         }
 
         final String params = pathAndParams[1];
+        final HashMap<String, String> parameters = new HashMap<>();
 
         final String[] paramsPairs = params.split("&");
         for (final var pp : paramsPairs) {
@@ -71,22 +67,7 @@ public class Uri {
             }
             parameters.put(key, value);
         }
-    }
-
-    public List<String> getPath() {
-        return path;
-    }
-
-    public Map<String, String> getParameters() {
-        return parameters;
-    }
-
-    public boolean isRoot() {
-        return root;
-    }
-
-    public String getFile() {
-        return file;
+        return new Url(path, file, false, parameters);
     }
 
     private static boolean isValidFile(final String file) {

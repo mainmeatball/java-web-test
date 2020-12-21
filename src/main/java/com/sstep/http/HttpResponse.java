@@ -1,7 +1,11 @@
 package com.sstep.http;
 
+import com.sstep.http.enums.ConnectionType;
+import com.sstep.http.enums.ContentType;
+import com.sstep.http.enums.HttpVersion;
+import com.sstep.http.enums.ResponseCode;
+
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,7 +14,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -23,7 +26,7 @@ public class HttpResponse {
 
     private final static String LAST_MODIFIED = "Last-Modified: ";
 
-    private final HttpVersion version;
+    private final HttpVersion httpVersion;
 
     private final ResponseCode responseCode;
 
@@ -42,11 +45,11 @@ public class HttpResponse {
     private ContentType contentType = ContentType.TEXT_HTML;
 
     public HttpResponse(final HttpRequest request) {
-        version = request.getHttpVersion();
+        httpVersion = request.getHttpVersion();
         date = LocalDateTime.now();
         responseCode = ResponseCode.RC_200;
         lastModified = LocalDateTime.now();
-        final String file = request.getUri().getFile();
+        final String file = request.getUrl().getFile();
         if (file != null) {
             try {
                 final URL resources = getClass().getClassLoader().getResource("static/" + file);
@@ -71,8 +74,8 @@ public class HttpResponse {
         return date;
     }
 
-    public HttpVersion getVersion() {
-        return version;
+    public HttpVersion getHttpVersion() {
+        return httpVersion;
     }
 
     public ResponseCode getResponseCode() {
@@ -111,10 +114,14 @@ public class HttpResponse {
         return contentType;
     }
 
+    public String construct() {
+        return toString();
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append(version).append(" ").append(responseCode).append('\n')
+        sb.append(httpVersion).append(" ").append(responseCode).append('\n')
                 .append("Date: ").append(getDateFormatted()).append('\n')
                 .append("Server: ").append(server).append('\n')
                 .append(getLastModifiedHeader()).append('\n')
@@ -124,15 +131,4 @@ public class HttpResponse {
                 .append(fileContent).append('\n');
         return sb.toString();
     }
-
-    /*
-            "HTTP/1.1 200 OK\n" +
-            "Date: Mon, 27 Jul 2009 12:28:53 GMT\n" +
-            "Server: Apache/2.2.14 (Win32)\n" +
-            "Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT\n" +
-            "Content-Length: 88\n" +
-            "Connection: Closed\n" +
-            "Content-Type: text/html\n" +
-            "\n");
-     */
 }

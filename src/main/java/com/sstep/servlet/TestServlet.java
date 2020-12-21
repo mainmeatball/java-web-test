@@ -3,6 +3,7 @@ package com.sstep.servlet;
 import com.sstep.http.HttpRequest;
 import com.sstep.http.HttpResponse;
 import com.sstep.http.exception.HttpParsingException;
+import com.sstep.http.parser.HttpRequestParser;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -30,10 +31,10 @@ public class TestServlet {
 
                     System.out.println("The Client " + clientSocket.getInetAddress() + ":" + clientSocket.getPort() + " is connected");
 
-                    final HttpRequest request = new HttpRequest(in);
+                    final HttpRequest request = HttpRequestParser.parse(in);
                     final HttpResponse response = new HttpResponse(request);
 
-                    out.write(response.toString());
+                    out.write(response.construct());
                     out.flush();
                 } catch (final HttpParsingException e) {
                     e.printStackTrace();

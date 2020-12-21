@@ -1,9 +1,7 @@
 package com.sstep.http;
 
-import com.sstep.http.exception.HttpParsingException;
-
-import java.io.BufferedReader;
-import java.io.IOException;
+import com.sstep.http.enums.HttpMethod;
+import com.sstep.http.enums.HttpVersion;
 
 
 /**
@@ -13,33 +11,38 @@ public class HttpRequest {
 
     private final HttpMethod httpMethod;
 
-    private final Uri uri;
+    private final Url url;
 
     private final HttpVersion version;
 
-    public HttpRequest(final BufferedReader inputStream) throws IOException, HttpParsingException {
-        if (!inputStream.ready()) {
-            throw new IllegalArgumentException("Request is empty");
-        }
-        final String startString = inputStream.readLine();
-        final String[] firstLine = startString.split(" ");
-        if (firstLine.length != 3) {
-            throw new HttpParsingException();
-        }
-        httpMethod = HttpMethod.valueOf(firstLine[0]);
-        uri = new Uri(firstLine[1]);
-        version = HttpVersion.parse(firstLine[2]);
-//        while (inputStream.ready()) {
-//
-//        }
+    public static HttpRequest constructGet(final Url url) {
+        return new HttpRequest(HttpMethod.GET, url);
+    }
+
+    /**
+     * Constructs HTTP/1.1 request.
+     */
+    public HttpRequest(final HttpMethod httpMethod,
+                       final Url url) {
+        this.httpMethod = httpMethod;
+        this.url = url;
+        this.version = HttpVersion.HTTP_1_1;
+    }
+
+    public HttpRequest(final HttpMethod httpMethod,
+                       final Url url,
+                       final HttpVersion version) {
+        this.httpMethod = httpMethod;
+        this.url = url;
+        this.version = version;
     }
 
     public HttpMethod getHttpMethod() {
         return httpMethod;
     }
 
-    public Uri getUri() {
-        return uri;
+    public Url getUrl() {
+        return url;
     }
 
     public HttpVersion getHttpVersion() {

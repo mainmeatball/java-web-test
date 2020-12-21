@@ -1,4 +1,4 @@
-package com.sstep.http;
+package com.sstep.http.enums;
 
 import com.sstep.http.exception.HttpParsingException;
 
