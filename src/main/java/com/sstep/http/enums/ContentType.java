@@ -1,4 +1,4 @@
-package com.sstep.http;
+package com.sstep.http.enums;
 
 /**
  * @author sstepanov
