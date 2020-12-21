@@ -11,10 +11,10 @@ import java.util.*;
  */
 public class Url {
 
-    private List<String> path;
-    private Map<String, String> parameters;
-    private boolean root;
-    private String file;
+    private final List<String> path;
+    private final Map<String, String> parameters;
+    private final boolean root;
+    private final String file;
 
     public static Url root() {
         return new Url(Collections.emptyList(), null, true, new HashMap<>());

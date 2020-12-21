@@ -49,7 +49,7 @@ public class HttpResponse {
         date = LocalDateTime.now();
         responseCode = ResponseCode.RC_200;
         lastModified = LocalDateTime.now();
-        final String file = request.getUrl().getFile();
+        final String file = request.getUrl().isRoot() ? "home.html" : request.getUrl().getFile();
         if (file != null) {
             try {
                 final URL resources = getClass().getClassLoader().getResource("static/" + file);
