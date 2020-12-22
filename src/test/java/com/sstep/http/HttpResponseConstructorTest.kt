@@ -16,7 +16,7 @@ class HttpResponseConstructorTest {
 
     @Test
     fun `Construct GET HTTP response from request`() {
-        val pathWithParams = "/path1/path2/path3/index.html?p1=v1&p2=v2&p3=v3"
+        val pathWithParams = "/index?p1=v1&p2=v2&p3=v3"
         val url = UrlParser.parse(pathWithParams)
         val request = HttpRequest.constructGet(url)
 
@@ -32,7 +32,30 @@ class HttpResponseConstructorTest {
 
         assertEquals(HttpVersion.HTTP_1_1, response.httpVersion)
         assertEquals(ResponseCode.RC_200, response.responseCode)
-        assertEquals(fileContent, response.fileContent)
+        assertEquals(fileContent, response.fileContent.content)
+        assertEquals(fileContent.length, response.contentLength)
+        assertEquals(ConnectionType.CLOSED, response.connectionType)
+        assertEquals(ContentType.TEXT_HTML, response.contentType)
+    }
+
+    @Test
+    fun `Construct GET HTTP response from request root`() {
+        val pathWithParams = "/"
+        val url = UrlParser.parse(pathWithParams)
+        val request = HttpRequest.constructGet(url)
+
+        val response = HttpResponse(request)
+
+        val fileContent = "<!DOCTYPE html>\n" +
+            "<html lang=\"en\">\n" +
+            "<body>\n" +
+            "<h1>Home</h1>\n" +
+            "</body>\n" +
+            "</html>"
+
+        assertEquals(HttpVersion.HTTP_1_1, response.httpVersion)
+        assertEquals(ResponseCode.RC_200, response.responseCode)
+        assertEquals(fileContent, response.fileContent.content)
         assertEquals(fileContent.length, response.contentLength)
         assertEquals(ConnectionType.CLOSED, response.connectionType)
         assertEquals(ContentType.TEXT_HTML, response.contentType)
