@@ -42,7 +42,7 @@ public class HttpResponse {
         date = LocalDateTime.now();
         responseCode = ResponseCode.RC_200;
         final Url url = request.getUrl();
-        final WebController controller = new HttpController();
+        final WebController controller = HttpController.getInstance();
         fileContent = controller.getContent(url);
     }
 

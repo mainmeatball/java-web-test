@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractHttpController implements WebController {
 
-    protected final Map<String, Method> stringMethodMap;
+    protected final ConcurrentMap<String, Method> stringMethodMap;
 
     public AbstractHttpController() {
         stringMethodMap = Arrays.stream(getClass().getMethods())
@@ -36,7 +36,7 @@ public abstract class AbstractHttpController implements WebController {
                             .map(endpoint -> new Pair<>(endpoint, method))
                             .collect(Collectors.toList()))
                 .flatMap(List::stream)
-                .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+                .collect(Collectors.toConcurrentMap(Pair::getFirst, Pair::getSecond));
     }
 
     @Override
