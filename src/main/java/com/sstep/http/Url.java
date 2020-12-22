@@ -1,9 +1,9 @@
 package com.sstep.http;
 
-import com.sstep.http.exception.HttpParsingException;
-import com.sstep.util.StringUtils;
-
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -38,6 +38,10 @@ public class Url {
 
     public List<String> getPath() {
         return path;
+    }
+
+    public String getJoinedPath() {
+        return "/" + String.join("/", path);
     }
 
     public Map<String, String> getParameters() {

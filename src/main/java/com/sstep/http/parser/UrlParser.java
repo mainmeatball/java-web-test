@@ -2,9 +2,9 @@ package com.sstep.http.parser;
 
 import com.sstep.http.Url;
 import com.sstep.http.exception.HttpParsingException;
+import com.sstep.util.HttpUtilsKt;
 import com.sstep.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,13 +13,6 @@ import java.util.List;
  * @author sstepanov
  */
 public class UrlParser {
-
-    private static final List<String> ALLOWED_FILE_EXTENSIONS = new ArrayList<>();
-
-    static {
-        ALLOWED_FILE_EXTENSIONS.add("html");
-        ALLOWED_FILE_EXTENSIONS.add("xml");
-    }
 
     public static Url parse(final String pathWithParams) throws HttpParsingException {
         if (pathWithParams.isEmpty()) {
@@ -38,7 +31,7 @@ public class UrlParser {
 
         if (path.size() > 0) {
             final String last = path.get(path.size() - 1);
-            if (isValidFile(last)) {
+            if (HttpUtilsKt.isValidFile(last)) {
                 file = last;
             }
         }
@@ -68,17 +61,5 @@ public class UrlParser {
             parameters.put(key, value);
         }
         return new Url(path, file, false, parameters);
-    }
-
-    private static boolean isValidFile(final String file) {
-        if (file.indexOf('.') == -1) {
-            return false;
-        }
-        final String[] fileWithExt = file.split("\\.");
-        if (fileWithExt.length != 2) {
-            return false;
-        }
-        final String ext = fileWithExt[1];
-        return ALLOWED_FILE_EXTENSIONS.contains(ext);
     }
 }

@@ -22,7 +22,6 @@ public class TestServlet {
     }
 
     public void listen() {
-
         try (final ServerSocket serverSocket = new ServerSocket(port)) {
             while (true) {
                 try (final Socket clientSocket = serverSocket.accept();

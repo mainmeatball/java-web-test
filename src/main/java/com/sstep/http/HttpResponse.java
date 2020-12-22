@@ -1,20 +1,17 @@
 package com.sstep.http;
 
+import com.sstep.http.controller.impl.HttpController;
+import com.sstep.http.controller.interfaces.WebController;
+import com.sstep.http.entity.FileContent;
 import com.sstep.http.enums.ConnectionType;
 import com.sstep.http.enums.ContentType;
 import com.sstep.http.enums.HttpVersion;
 import com.sstep.http.enums.ResponseCode;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 
 /**
@@ -34,11 +31,7 @@ public class HttpResponse {
 
     private final String server = "Java web server";
 
-    private LocalDateTime lastModified;
-
-    private String fileContent = "";
-
-    private int contentLength;
+    private final FileContent fileContent;
 
     private ConnectionType connectionType = ConnectionType.CLOSED;
 
@@ -48,22 +41,9 @@ public class HttpResponse {
         httpVersion = request.getHttpVersion();
         date = LocalDateTime.now();
         responseCode = ResponseCode.RC_200;
-        lastModified = LocalDateTime.now();
-        final String file = request.getUrl().isRoot() ? "home.html" : request.getUrl().getFile();
-        if (file != null) {
-            try {
-                final URL resources = getClass().getClassLoader().getResource("static/" + file);
-                if (resources == null) {
-                    throw new IllegalArgumentException("The file in URL path is invalid.");
-                }
-                final Path path = Paths.get(resources.getFile());
-                fileContent = Files.lines(path).collect(Collectors.joining("\n"));
-                lastModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneId.of("GMT"));
-                contentLength = fileContent.length();
-            } catch (final IOException e) {
-                e.printStackTrace();
-            }
-        }
+        final Url url = request.getUrl();
+        final WebController controller = new HttpController();
+        fileContent = controller.getContent(url);
     }
 
     public String getDateFormatted() {
@@ -86,24 +66,26 @@ public class HttpResponse {
         return server;
     }
 
-    public String getFileContent() {
+    public FileContent getFileContent() {
         return fileContent;
     }
 
     public LocalDateTime getLastModified() {
-        return lastModified;
+        return fileContent.getLastModified();
     }
 
     public String getLastModifiedFormatted() {
+        final LocalDateTime lastModified = fileContent.getLastModified();
         return lastModified == null ? "" : lastModified.format(GMT_DATE_FORMATTER);
     }
 
     public String getLastModifiedHeader() {
+        final LocalDateTime lastModified = fileContent.getLastModified();
         return lastModified == null ? "" : LAST_MODIFIED + lastModified.format(GMT_DATE_FORMATTER);
     }
 
     public int getContentLength() {
-        return contentLength;
+        return fileContent.getContentLength();
     }
 
     public ConnectionType getConnectionType() {
@@ -125,10 +107,10 @@ public class HttpResponse {
                 .append("Date: ").append(getDateFormatted()).append('\n')
                 .append("Server: ").append(server).append('\n')
                 .append(getLastModifiedHeader()).append('\n')
-                .append("Content-Length: ").append(contentLength).append('\n')
+                .append("Content-Length: ").append(getContentLength()).append('\n')
                 .append("Connection: ").append(connectionType).append('\n')
                 .append("Content-Type: ").append(contentType).append("\n\n")
-                .append(fileContent).append('\n');
+                .append(fileContent.getContent()).append('\n');
         return sb.toString();
     }
 }
