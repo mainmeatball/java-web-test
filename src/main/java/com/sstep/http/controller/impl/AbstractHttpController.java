@@ -5,6 +5,7 @@ import com.sstep.http.annotation.Get;
 import com.sstep.http.controller.interfaces.WebController;
 import com.sstep.http.entity.FileContent;
 import com.sstep.util.HttpUtilsKt;
+import kotlin.Pair;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -16,8 +17,8 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -31,7 +32,11 @@ public abstract class AbstractHttpController implements WebController {
     public AbstractHttpController() {
         stringMethodMap = Arrays.stream(getClass().getMethods())
                 .filter(method -> method.isAnnotationPresent(Get.class))
-                .collect(Collectors.toMap(m -> m.getAnnotation(Get.class).value(), Function.identity()));
+                .map(method -> Arrays.stream(method.getAnnotation(Get.class).value())
+                            .map(endpoint -> new Pair<>(endpoint, method))
+                            .collect(Collectors.toList()))
+                .flatMap(List::stream)
+                .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
     }
 
     @Override
@@ -53,19 +58,16 @@ public abstract class AbstractHttpController implements WebController {
     }
 
     private FileContent readFile(final String file) {
-        try {
-            final URL resources = getClass().getClassLoader().getResource("static/" + file);
-            if (resources == null) {
-                throw new IllegalArgumentException("The file in URL path is invalid.");
-            }
-            final Path path = Paths.get(resources.getFile());
-            final String fileContent = Files.lines(path).collect(Collectors.joining("\n"));
-            final LocalDateTime lastModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneId.of("GMT"));
-            return new FileContent(fileContent, lastModified);
-        } catch (final IOException e) {
-            e.printStackTrace();
+        final FileContent fileContent = doReadFile(file);
+        return fileContent == null ? answerNotFound() : fileContent;
+    }
+
+    private FileContent answerNotFound() {
+        final FileContent fileContent = doReadFile("not_found.html");
+        if (fileContent != null) {
+            return fileContent;
         }
-        return answerNotFound();
+        return generateHtmlTemplate("Something went wrong");
     }
 
     private static FileContent generateHtmlTemplate(final Object header, final Object... params) {
@@ -81,9 +83,9 @@ public abstract class AbstractHttpController implements WebController {
         return new FileContent(sb.toString(), LocalDateTime.now());
     }
 
-    private FileContent answerNotFound() {
+    private FileContent doReadFile(final String file) {
         try {
-            final URL resources = getClass().getClassLoader().getResource("static/not_found.html");
+            final URL resources = getClass().getClassLoader().getResource("static/" + file);
             if (resources == null) {
                 throw new IllegalArgumentException("The file in URL path is invalid.");
             }
@@ -92,7 +94,8 @@ public abstract class AbstractHttpController implements WebController {
             final LocalDateTime lastModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneId.of("GMT"));
             return new FileContent(fileContent, lastModified);
         } catch (final IOException e) {
-            return new FileContent(e.getLocalizedMessage());
+            e.printStackTrace();
+            return null;
         }
     }
 }

@@ -10,5 +10,5 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 public @interface Get {
 
-    String value() default "/";
+    String[] value() default "/";
 }
