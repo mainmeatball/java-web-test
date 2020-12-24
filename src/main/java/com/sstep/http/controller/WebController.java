@@ -1,4 +1,4 @@
-package com.sstep.http.controller.interfaces;
+package com.sstep.http.controller;
 
 import com.sstep.http.Url;
 import com.sstep.http.entity.FileContent;

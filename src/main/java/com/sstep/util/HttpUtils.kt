@@ -3,7 +3,8 @@ package com.sstep.util
 /**
  * @author sstepanov
  */
-private val ALLOWED_FILE_EXTENSIONS = listOf("html", "xml")
+
+private val ALLOWED_FILE_EXTENSIONS = setOf("html", "xml")
 
 @JvmOverloads
 fun String.isValidFile(allowedExtensions: List<String> = emptyList()): Boolean {

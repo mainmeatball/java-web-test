@@ -1,7 +1,7 @@
 package com.sstep.http;
 
 import com.sstep.http.controller.impl.HttpController;
-import com.sstep.http.controller.interfaces.WebController;
+import com.sstep.http.controller.WebController;
 import com.sstep.http.entity.FileContent;
 import com.sstep.http.enums.ConnectionType;
 import com.sstep.http.enums.ContentType;
@@ -96,6 +96,10 @@ public class HttpResponse {
         return contentType;
     }
 
+    public byte[] constructBytes() {
+        return toString().getBytes();
+    }
+
     public String construct() {
         return toString();
     }
@@ -109,7 +113,7 @@ public class HttpResponse {
                 .append(getLastModifiedHeader()).append('\n')
                 .append("Content-Length: ").append(getContentLength()).append('\n')
                 .append("Connection: ").append(connectionType).append('\n')
-                .append("Content-Type: ").append(contentType).append("\n\n")
+                .append("Content-Type: ").append(contentType.getName()).append("\n\n")
                 .append(fileContent.getContent()).append('\n');
         return sb.toString();
     }

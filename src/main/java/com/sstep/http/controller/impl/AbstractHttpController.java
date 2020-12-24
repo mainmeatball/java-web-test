@@ -2,8 +2,9 @@ package com.sstep.http.controller.impl;
 
 import com.sstep.http.Url;
 import com.sstep.http.annotation.Get;
-import com.sstep.http.controller.interfaces.WebController;
+import com.sstep.http.controller.WebController;
 import com.sstep.http.entity.FileContent;
+import com.sstep.util.FileUtils;
 import com.sstep.util.HttpUtilsKt;
 import kotlin.Pair;
 
@@ -47,7 +48,7 @@ public abstract class AbstractHttpController implements WebController {
         }
         try {
             final String content = (String) stringMethodMap.get(path).invoke(this);
-            if (HttpUtilsKt.isValidFile(content)) {
+            if (FileUtils.isValidFile(content)) {
                 return readFile(content);
             }
             return generateHtmlTemplate(content);

@@ -2,6 +2,7 @@ package com.sstep.http.parser;
 
 import com.sstep.http.Url;
 import com.sstep.http.exception.HttpParsingException;
+import com.sstep.util.FileUtils;
 import com.sstep.util.HttpUtilsKt;
 import com.sstep.util.StringUtils;
 
@@ -31,7 +32,7 @@ public class UrlParser {
 
         if (path.size() > 0) {
             final String last = path.get(path.size() - 1);
-            if (HttpUtilsKt.isValidFile(last)) {
+            if (FileUtils.isValidFile(last)) {
                 file = last;
             }
         }
