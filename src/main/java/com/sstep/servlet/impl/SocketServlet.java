@@ -1,9 +1,10 @@
-package com.sstep.servlet;
+package com.sstep.servlet.impl;
 
 import com.sstep.http.HttpRequest;
 import com.sstep.http.HttpResponse;
 import com.sstep.http.exception.HttpParsingException;
 import com.sstep.http.parser.HttpRequestParser;
+import com.sstep.servlet.ConnectionServlet;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -16,11 +17,11 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author sstepanov
  */
-public class TestServlet {
+public class SocketServlet implements ConnectionServlet {
 
     private final int port;
 
-    public TestServlet(final int port) {
+    public SocketServlet(final int port) {
         this.port = port;
     }
 
