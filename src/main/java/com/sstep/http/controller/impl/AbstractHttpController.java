@@ -5,7 +5,6 @@ import com.sstep.http.annotation.Get;
 import com.sstep.http.controller.WebController;
 import com.sstep.http.entity.FileContent;
 import com.sstep.util.FileUtils;
-import com.sstep.util.HttpUtilsKt;
 import kotlin.Pair;
 
 import java.io.IOException;
